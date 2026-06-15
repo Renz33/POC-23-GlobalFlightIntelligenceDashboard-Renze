@@ -14,19 +14,17 @@ import Intro from '@/components/Intro';
 
 const LiveMap = dynamic(() => import('@/components/LiveMap'), { ssr: false });
 
-const HEADER_HEIGHT = 60;
-
 export default function Dashboard() {
-  const [flights, setFlights]   = useState<any[]>([]);
-  const [alerts, setAlerts]     = useState<any[]>([]);
-  const [routes, setRoutes]     = useState<any[]>([]);
-  const [airports, setAirports] = useState<any[]>([]);
-  const [source, setSource]     = useState('');
-  const [loading, setLoading]   = useState(true);
-  const [filter, setFilter]     = useState({ country: '', minSpeed: 0, minAlt: 0 });
+  const [flights, setFlights]     = useState<any[]>([]);
+  const [alerts, setAlerts]       = useState<any[]>([]);
+  const [routes, setRoutes]       = useState<any[]>([]);
+  const [airports, setAirports]   = useState<any[]>([]);
+  const [source, setSource]       = useState('');
+  const [loading, setLoading]     = useState(true);
+  const [filter, setFilter]       = useState({ country: '', minSpeed: 0, minAlt: 0 });
   const [selectedAirport, setSelectedAirport] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'map' | 'replay'>('map');
   const [showIntro, setShowIntro] = useState(true);
+  const [activeSection, setActiveSection] = useState<'intelligence' | 'replay'>('intelligence');
 
   async function fetchAll() {
     try {
@@ -80,10 +78,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        height: '100vh', background: '#030712',
-      }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#030712' }}>
         <div style={{ textAlign: 'center', color: '#38BDF8' }}>
           <div style={{ fontSize: 40, marginBottom: 16 }}>✈</div>
           <div style={{ fontSize: 18, fontWeight: 600 }}>Loading Flight Intelligence...</div>
@@ -94,296 +89,228 @@ export default function Dashboard() {
   }
 
   return (
-    <div style={{
-      height: '100vh',
-      background: '#030712',
-      display: 'flex',
-      flexDirection: 'column',
-      overflow: 'hidden',
-    }}>
+    <div style={{ height: '100vh', background: '#030712', display: 'flex', overflow: 'hidden' }}>
       {showIntro && <Intro onComplete={() => setShowIntro(false)} />}
 
-      {/* ══════════════════════════════════════
-          HEADER — full width, fixed height
-      ══════════════════════════════════════ */}
-      <header style={{
-        height: HEADER_HEIGHT,
-        minHeight: HEADER_HEIGHT,
-        flexShrink: 0,
-        background: 'rgba(3,7,18,0.92)',
-        borderBottom: '1px solid #1F2937',
-        padding: '0 24px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        zIndex: 100,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <span style={{ fontSize: 24 }}>✈</span>
-          <div>
-            <div style={{
-              fontSize: 20, fontWeight: 800, color: '#f8fafc',
-              letterSpacing: '1px', textTransform: 'uppercase',
-            }}>
-              GLOBAL FLIGHT INTELLIGENCE
-            </div>
-            <div style={{ fontSize: 12, color: '#94a3b8' }}>Real-Time Aviation Intelligence Platform</div>
-          </div>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span className={source.includes('live') ? 'badge-live' : 'badge-mock'}>
-            {source.includes('live') ? 'LIVE' : 'SYNTHETIC'}
-          </span>
-          <span style={{ fontSize: 12, color: '#64748b' }}>{filteredFlights.length} flights</span>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: 1.2 }}>
-            <span style={{ fontSize: 10, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              Last Updated
-            </span>
-            <span style={{ fontSize: 12, color: '#38BDF8', fontWeight: 600 }}>
-              {new Date().toLocaleTimeString()}
-            </span>
-          </div>
-        </div>
-      </header>
-
-      {/* ══════════════════════════════════════
-          BODY — 70 / 30 split, fills remaining height
-      ══════════════════════════════════════ */}
+      {/* ════════════════════════════════════
+          LEFT 70% — MAP ONLY, FULL HEIGHT
+      ════════════════════════════════════ */}
       <div style={{
-        flex: 1,
+        width: '70%',
+        flexShrink: 0,
+        position: 'relative',
+        borderRight: '1px solid #1F2937',
+        overflow: 'hidden',
+        height: '100vh',
+      }}>
+        {/* Legend pills — float top-center over map */}
+        <div style={{
+          position: 'absolute',
+          top: 14,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          gap: 8,
+          zIndex: 1000,
+          pointerEvents: 'none',
+        }}>
+          {[
+            { label: '🟢 LIVE FLIGHTS', color: '#34d399', border: 'rgba(52,211,153,0.4)' },
+            { label: '🟡 SYNTHETIC',    color: '#fbbf24', border: 'rgba(251,191,36,0.4)'  },
+            { label: '🔵 AIRPORTS',     color: '#818CF8', border: 'rgba(129,140,248,0.4)' },
+          ].map(p => (
+            <span key={p.label} style={{
+              background: 'rgba(10,15,26,0.85)',
+              border: `1px solid ${p.border}`,
+              color: p.color,
+              padding: '5px 12px',
+              borderRadius: 999,
+              fontSize: 11,
+              fontWeight: 600,
+              backdropFilter: 'blur(8px)',
+            }}>{p.label}</span>
+          ))}
+        </div>
+
+        {/* Map fills entire left column */}
+        <LiveMap
+          flights={filteredFlights}
+          airports={airports}
+          onAirportClick={setSelectedAirport}
+        />
+      </div>
+
+      {/* ════════════════════════════════════
+          RIGHT 30% — INTELLIGENCE SIDEBAR
+      ════════════════════════════════════ */}
+      <aside style={{
+        width: '30%',
+        flexShrink: 0,
+        background: '#0B1117',
+        height: '100vh',
+        overflowY: 'auto',
+        overflowX: 'hidden',
         display: 'flex',
-        overflow: 'hidden',        // children scroll independently
-        minHeight: 0,
+        flexDirection: 'column',
       }}>
 
-        {/* ════════════════════════════
-            LEFT 70% — MAP STAGE
-        ════════════════════════════ */}
+        {/* ── SIDEBAR HEADER (replaces top navbar) ── */}
         <div style={{
-          width: '70%',
+          padding: '16px 16px 12px',
+          borderBottom: '1px solid #1F2937',
+          background: 'rgba(3,7,18,0.95)',
           flexShrink: 0,
-          display: 'flex',
-          flexDirection: 'column',  // tab bar on top, map fills the rest
-          borderRight: '1px solid #1F2937',
-          overflow: 'hidden',
-          minHeight: 0,
+          position: 'sticky',
+          top: 0,
+          zIndex: 50,
         }}>
-
-          {/* ── Combined bar: tab buttons LEFT · legend pills RIGHT ── */}
-          <div style={{
-            height: 44,
-            minHeight: 44,
-            flexShrink: 0,
-            background: '#0a0f1a',
-            borderBottom: '1px solid #1F2937',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0 16px',
-          }}>
-            {/* Tab buttons */}
-            <div style={{ display: 'flex', gap: 8 }}>
-              {(['map', 'replay'] as const).map(tab => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  style={{
-                    padding: '6px 16px',
-                    borderRadius: 8,
-                    border: activeTab === tab
-                      ? '1px solid rgba(56,189,248,0.5)'
-                      : '1px solid #1F2937',
-                    background: activeTab === tab
-                      ? 'rgba(56,189,248,0.15)'
-                      : 'transparent',
-                    color: activeTab === tab ? '#38BDF8' : '#64748b',
-                    boxShadow: activeTab === tab
-                      ? '0 0 12px rgba(56,189,248,0.2)'
-                      : 'none',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  {tab === 'map' ? '🗺 Live Map' : '⏪ Historical Replay'}
-                </button>
-              ))}
-            </div>
-
-            {/* Legend pills — only shown when map is active */}
-            {activeTab === 'map' && (
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <span style={{
-                  background: 'rgba(52,211,153,0.12)',
-                  border: '1px solid rgba(52,211,153,0.3)',
-                  color: '#34d399',
-                  padding: '4px 10px',
-                  borderRadius: '999px',
-                  fontSize: 11,
-                  fontWeight: 600,
-                }}>🟢 LIVE FLIGHTS</span>
-                <span style={{
-                  background: 'rgba(251,191,36,0.12)',
-                  border: '1px solid rgba(251,191,36,0.3)',
-                  color: '#fbbf24',
-                  padding: '4px 10px',
-                  borderRadius: '999px',
-                  fontSize: 11,
-                  fontWeight: 600,
-                }}>🟡 SYNTHETIC</span>
-                <span style={{
-                  background: 'rgba(129,140,248,0.12)',
-                  border: '1px solid rgba(129,140,248,0.3)',
-                  color: '#818CF8',
-                  padding: '4px 10px',
-                  borderRadius: '999px',
-                  fontSize: 11,
-                  fontWeight: 600,
-                }}>🔵 AIRPORTS</span>
+          {/* Title row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+            <span style={{ fontSize: 20 }}>✈</span>
+            <div>
+              <div style={{
+                fontSize: 15,
+                fontWeight: 800,
+                color: '#f8fafc',
+                letterSpacing: '0.8px',
+                textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
+                lineHeight: 1.2,
+              }}>
+                GLOBAL FLIGHT INTELLIGENCE
               </div>
-            )}
+              <div style={{ fontSize: 10, color: '#64748b', marginTop: 2 }}>
+                Real-Time Aviation Intelligence Platform
+              </div>
+            </div>
           </div>
 
-          {/* ── Map / Replay — fills all remaining space ── */}
-          <div style={{ flex: 1, minHeight: 0, overflow: 'hidden', position: 'relative', height: '100%' }}>
-            {activeTab === 'map'
-              ? <LiveMap
-                  flights={filteredFlights}
-                  airports={airports}
-                  onAirportClick={setSelectedAirport}
-                />
-              : <HistoricalReplay />
-            }
+          {/* Status row */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span className={source.includes('live') ? 'badge-live' : 'badge-mock'}>
+                {source.includes('live') ? 'LIVE' : 'SYNTHETIC'}
+              </span>
+              <span style={{ fontSize: 11, color: '#64748b' }}>
+                {filteredFlights.length} flights
+              </span>
+            </div>
+            <div style={{ textAlign: 'right', lineHeight: 1.3 }}>
+              <div style={{ fontSize: 9, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                Last Updated
+              </div>
+              <div style={{ fontSize: 11, color: '#38BDF8', fontWeight: 700 }}>
+                {new Date().toLocaleTimeString()}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* ════════════════════════════
-            RIGHT 30% — INTELLIGENCE SIDEBAR
-        ════════════════════════════ */}
-        <aside style={{
-          width: '30%',
-          flexShrink: 0,
-          background: '#0B1117',
-          overflowY: 'auto',
-          overflowX: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: 0,
-        }}>
-
-         
-          
-          {/* ── SECTION A — Intelligence Layer (Stats + Alerts) ── */}
-          <section style={{ borderBottom: '1px solid #1F2937', padding: '14px' }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: 12,
-            }}>
-              <span style={{
-                fontSize: 12, fontWeight: 700, color: '#94a3b8',
-                textTransform: 'uppercase', letterSpacing: '0.8px',
-              }}>
-                🛰 Intelligence Layer
-              </span>
-              <span style={{
-                fontSize: 10, fontWeight: 600, color: '#818CF8',
-                background: 'rgba(129,140,248,0.12)',
-                border: '1px solid rgba(129,140,248,0.3)',
-                padding: '2px 8px', borderRadius: 20,
-                textTransform: 'uppercase', letterSpacing: '0.5px',
-              }}>
-                
-              </span>
-            </div>
-            <div style={{ overflowX: 'auto', paddingBottom: 4 }}>
-              <StatsBar flights={filteredFlights} alerts={alerts} routes={routes} />
-            </div>
-
-             {/* ── SECTION D — Filters ── */}
-          <section style={{ borderBottom: '1px solid #1F2937', padding: '14px' }}>
-            <div style={{
-              fontSize: 11, fontWeight: 700, color: '#94a3b8',
-              textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 8,
-            }}>
-              🔍 Filters 
-            </div>
-            <FilterBar filter={filter} onChange={setFilter} />
-          </section>
-
-            <div style={{ marginTop: 12 }}>
-              <AlertCards alerts={alerts} />
-            </div>
-          </section>
-
-          {/* ── Route Density ── */}
-          <section style={{ borderBottom: '1px solid #1F2937', padding: '14px' }}>
-            <div style={{
-              fontSize: 11, fontWeight: 700, color: '#94a3b8',
-              textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 8,
-            }}>
-              
-            </div>
-            <div style={{ overflowX: 'auto' }}>
-              <RouteDensity routes={routes} />
-            </div>
-          </section>
-
-          {/* ── SECTION B — Why This Matters ── */}
-          <section style={{ borderBottom: '1px solid #1F2937', padding: '14px' }}>
-            <div style={{
-              fontSize: 11, fontWeight: 700, color: '#94a3b8',
-              textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 8,
-            }}>
-              
-            </div>
-            <WhyThisMatters />
-          </section>
-
-          {/* ── SECTION C — Who Controls the Rail ── */}
-          <section style={{ borderBottom: '1px solid #1F2937', padding: '14px' }}>
-            <div style={{
-              fontSize: 11, fontWeight: 700, color: '#94a3b8',
-              textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 8,
-            }}>
-              🏛 Who Controls the Rail
-            </div>
-            {/*
-              No more overflowX: auto here — WhoControlsTheRail now uses
-              a 2-column grid that fits naturally inside the 30% sidebar.
-            */}
-            <WhoControlsTheRail />
-          </section>
-
-          
-
-          {/* ── SECTION E — Download ── */}
-          <section style={{ padding: '14px' }}>
+        {/* ── TAB SWITCHER: Intelligence | Replay ── */}
+        <div style={{ display: 'flex', borderBottom: '1px solid #1F2937', flexShrink: 0 }}>
+          {(['intelligence', 'replay'] as const).map(tab => (
             <button
-              onClick={downloadData}
+              key={tab}
+              onClick={() => setActiveSection(tab)}
               style={{
-                width: '100%',
-                background: 'rgba(56,189,248,0.1)',
-                border: '1px solid rgba(56,189,248,0.3)',
-                color: '#38BDF8',
-                padding: '10px 0',
-                borderRadius: 8,
-                fontSize: 13,
-                cursor: 'pointer',
-                fontWeight: 600,
-                letterSpacing: '0.3px',
-              }}
+  flex: 1,
+  padding: '11px 0',
+  background: activeSection === tab ? 'rgba(56,189,248,0.08)' : 'transparent',
+  borderTop: 'none',
+  borderLeft: 'none',
+  borderRight: 'none',
+  borderBottom: activeSection === tab ? '2px solid #38BDF8' : '2px solid transparent',
+  color: activeSection === tab ? '#38BDF8' : '#64748b',
+  fontSize: 11,
+  fontWeight: 700,
+  cursor: 'pointer',
+  letterSpacing: '0.5px',
+  textTransform: 'uppercase' as const,
+}}
             >
-              ⬇ Download Sample Data
+              {tab === 'intelligence' ? '🛰 Intelligence' : '⏪ Replay'}
             </button>
-            <div style={{ textAlign: 'center', fontSize: 10, color: '#334155', marginTop: 10 }}>
-              OpenSky Network + Synthetic mock engine · Next.js + FastAPI
-            </div>
-          </section>
+          ))}
+        </div>
 
-        </aside>
-      </div>
+        {/* ── INTELLIGENCE TAB ── */}
+        {activeSection === 'intelligence' ? (
+          <>
+            {/* SECTION A — Stats */}
+            <section style={{ borderBottom: '1px solid #1F2937', padding: '14px' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 10 }}>
+                🛰 Intelligence Layer
+              </div>
+              <StatsBar flights={filteredFlights} alerts={alerts} routes={routes} />
+            </section>
+
+            {/* SECTION D — Filters */}
+            <section style={{ borderBottom: '1px solid #1F2937', padding: '14px' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 8 }}>
+                🔍 Filters
+              </div>
+              <FilterBar filter={filter} onChange={setFilter} />
+            </section>
+
+            {/* Active Alerts */}
+            <section style={{ borderBottom: '1px solid #1F2937', padding: '14px' }}>
+              <AlertCards alerts={alerts} />
+            </section>
+
+            {/* Route Density */}
+            <section style={{ borderBottom: '1px solid #1F2937', padding: '14px' }}>
+              
+              <div style={{ overflowX: 'auto' }}>
+                <RouteDensity routes={routes} />
+              </div>
+            </section>
+
+            {/* SECTION B — Why This Matters */}
+            <section style={{ borderBottom: '1px solid #1F2937', padding: '14px' }}>
+              
+              <WhyThisMatters />
+            </section>
+
+            {/* SECTION C — Who Controls the Rail */}
+            <section style={{ borderBottom: '1px solid #1F2937', padding: '14px' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 8 }}>
+                🏛 Who Controls the Rail
+              </div>
+              <WhoControlsTheRail />
+            </section>
+
+            {/* SECTION E — Download */}
+            <section style={{ padding: '14px' }}>
+              <button
+                onClick={downloadData}
+                style={{
+                  width: '100%',
+                  background: 'rgba(56,189,248,0.1)',
+                  border: '1px solid rgba(56,189,248,0.3)',
+                  color: '#38BDF8',
+                  padding: '10px 0',
+                  borderRadius: 8,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  letterSpacing: '0.3px',
+                }}
+              >
+                ⬇ Download Sample Data
+              </button>
+              <div style={{ textAlign: 'center', fontSize: 10, color: '#334155', marginTop: 10 }}>
+                OpenSky Network + Synthetic mock engine · Next.js + FastAPI
+              </div>
+            </section>
+          </>
+        ) : (
+          /* ── REPLAY TAB ── */
+          <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+            <HistoricalReplay />
+          </div>
+        )}
+
+      </aside>
 
       {/* ── AIRPORT DRILL-DOWN MODAL ── */}
       {selectedAirport && (
