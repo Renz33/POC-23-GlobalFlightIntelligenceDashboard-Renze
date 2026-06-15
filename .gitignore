@@ -1,0 +1,38 @@
+# =====================
+# Python / FastAPI
+# =====================
+backend/venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# =====================
+# Next.js / React
+# =====================
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# =====================
+# Environment Variables
+# =====================
+.env
+.env.local
+.env.*
+
+# =====================
+# VS Code
+# =====================
+.vscode/
+
+# =====================
+# OS Files
+# =====================
+.DS_Store
+Thumbs.db
+
+# =====================
+# Logs
+# =====================
+*.log
+
