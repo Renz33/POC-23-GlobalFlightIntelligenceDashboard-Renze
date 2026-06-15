@@ -2,92 +2,74 @@
 
 ## Overview
 
-Global Flight Intelligence Dashboard is a production-style aviation intelligence platform designed to demonstrate how real-time flight data, route analytics, anomaly detection, and airport intelligence can be presented through a modern dashboard experience.
+Global Flight Intelligence Dashboard is a production-style aviation intelligence platform that combines real-time flight tracking, route intelligence, anomaly detection, airport analytics, and historical replay capabilities within a modern intelligence dashboard.
 
-The project combines live flight information from OpenSky Network with a synthetic intelligence engine that automatically generates realistic flight, route, and alert data whenever live sources are unavailable. This ensures uninterrupted dashboard operation and allows the platform to function as both a monitoring tool and a demonstration environment.
+The platform integrates live aviation data from OpenSky Network and automatically falls back to a synthetic intelligence engine when live data is unavailable. This ensures uninterrupted operation while maintaining a realistic monitoring and analysis environment.
+
+The dashboard follows the Real Rails intelligence-layer architecture, featuring a 70/30 layout with a primary visualization stage and a dedicated intelligence sidebar.
 
 ---
 
-## Key Features
+## Core Features
 
-### Live Flight Tracking
+### Live Flight Intelligence
 
-* Real-time aircraft positions displayed on an interactive map.
-* Aircraft heading, altitude, speed, and country information.
-* Automatic updates from OpenSky Network.
+* Real-time aircraft tracking using OpenSky Network.
+* Up to 80 live aircraft state vectors.
+* Country, altitude, heading, speed, and callsign information.
+* Automatic refresh every 15 seconds.
 
-### Synthetic Fallback Engine
+### Synthetic Intelligence Engine
 
-* Generates realistic flight, route, and alert data.
-* Activates automatically when live data is unavailable.
-* Clearly labeled to distinguish from live information.
+* Generates realistic flight movements.
+* Generates route density data.
+* Generates intelligence alerts.
+* Generates historical replay snapshots.
+* Activates automatically when live sources are unavailable.
+
+### Intelligence Layer
+
+* Active alerts panel.
+* Route density analysis.
+* Why This Matters intelligence section.
+* Who Controls The Rail intelligence section.
+* Downloadable intelligence data.
+* Advanced filtering controls.
 
 ### Route Density Analytics
 
-* Displays high-traffic flight corridors.
-* Highlights major international aviation routes.
-* Supports operational traffic analysis.
+* Real route corridors derived from live aircraft data.
+* Synthetic route generation fallback.
+* Identification of major traffic corridors.
 
-### Active Alert System
+### Alert Intelligence Engine
 
-* Route divergence detection.
-* Speed deviation monitoring.
-* No-signal alerts.
-* Emergency squawk simulation.
-* Severity-based alert classification.
+Live anomaly detection based on:
+
+* Speed deviations
+* Altitude anomalies
+* Route divergence
+* Signal loss conditions
+
+Fallback synthetic alert generation is available when live feeds are unavailable.
 
 ### Historical Replay
 
-* Replay historical flight snapshots.
-* Review previous flight movements and alerts.
-* Demonstrates timeline-based intelligence analysis.
+* Replay previous intelligence snapshots.
+* Live replay generation from OpenSky-derived data.
+* Synthetic replay generation fallback.
 
 ### Airport Intelligence Drill-Down
 
-* Airport-specific traffic overview.
-* Daily movement statistics.
-* Flight activity summaries.
-* Operational status indicators.
+* Airport-specific traffic summaries.
+* Flight activity monitoring.
+* Alert overview.
+* Operational analytics.
 
-### Advanced Filtering
+### Data Export
 
-* Country-based filtering.
-* Minimum speed filtering.
-* Minimum altitude filtering.
-* Instant dashboard-wide updates.
-
-### Downloadable Sample Data
-
-* Export filtered flight intelligence data as JSON.
-* Useful for testing and analytics workflows.
-
----
-
-## Why This Matters
-
-Modern aviation generates massive volumes of real-time data. Converting this information into actionable intelligence requires effective visualization, monitoring, and analysis tools.
-
-This dashboard demonstrates how flight intelligence systems can support:
-
-* Operational monitoring
-* Traffic analysis
-* Aviation safety awareness
-* Route optimization studies
-* Intelligence and research workflows
-
----
-
-## Who Controls the Rail?
-
-The core rail represented in this project is **Data & Intelligence**.
-
-Organizations contributing to this ecosystem include:
-
-* OpenSky Network
-* ADS-B Data Providers
-* Aviation Intelligence Platforms
-* Air Traffic Monitoring Systems
-* Analytics and Decision Support Tools
+* Download intelligence datasets as JSON.
+* Export filtered dashboard information.
 
 ---
 
@@ -98,7 +80,7 @@ Organizations contributing to this ecosystem include:
 * Next.js
 * React
 * TypeScript
-* Leaflet Maps
+* Leaflet
 * Tailwind CSS
 
 ### Backend
@@ -109,22 +91,44 @@ Organizations contributing to this ecosystem include:
 
 ### Data Sources
 
-* OpenSky Network (Live Flight Data)
-* Synthetic Intelligence Engine (Fallback Data)
+* OpenSky Network (Live)
+* Synthetic Intelligence Engine (Fallback)
 
 ---
 
-## System Architecture
+## Architecture
 
-User Interface (Next.js)
-↓
-REST API Requests
+Next.js Dashboard
 ↓
 FastAPI Backend
 ↓
-OpenSky Network (Live Data)
+Live OpenSky Adapter
++
+Synthetic Intelligence Engine
 ↓
-Synthetic Intelligence Engine (Fallback)
+Intelligence Layer
+↓
+Visualization & Analytics
+
+---
+
+## Data Refresh Strategy
+
+### Live Mode
+
+* Flights refresh every 15 seconds.
+* Route Density derives from live aircraft.
+* Alerts derive from live aircraft anomalies.
+* Historical Replay derives from live aircraft states.
+
+### Synthetic Mode
+
+* Flights generated dynamically.
+* Routes generated dynamically.
+* Alerts generated dynamically.
+* Replay snapshots generated dynamically.
+
+All synthetic data is clearly labeled.
 
 ---
 
@@ -144,11 +148,9 @@ pip install -r requirements.txt
 uvicorn main:app --reload
 ```
 
-Backend runs on:
+Backend:
 
-```text
 http://localhost:8000
-```
 
 ### Frontend
 
@@ -160,78 +162,43 @@ npm install
 npm run dev
 ```
 
-Frontend runs on:
+Frontend:
 
-```text
 http://localhost:3000
-```
 
 ---
 
 ## API Endpoints
 
-### Flights
-
-```http
 GET /api/flights
-```
 
-Returns live or synthetic flight information.
-
-### Alerts
-
-```http
 GET /api/alerts
-```
 
-Returns active aviation alerts.
-
-### Routes
-
-```http
 GET /api/routes
-```
 
-Returns route density analytics.
-
-### Airports
-
-```http
 GET /api/airports
-```
 
-Returns airport metadata.
-
-### Airport Details
-
-```http
 GET /api/airport/{code}
-```
 
-Returns airport intelligence information.
-
-### Historical Replay
-
-```http
 GET /api/replay
-```
 
-Returns replay snapshots.
+GET /api/download
 
 ---
 
-## Future Improvements
+## Future Enhancements
 
-* ADS-B Exchange adapter integration
-* Real anomaly detection engine
-* User authentication
-* Flight search by callsign
-* Real-time WebSocket updates
-* Deployment to cloud infrastructure
-* Advanced analytics dashboards
+* ADS-B Exchange integration
+* Enhanced anomaly detection models
+* Aircraft search functionality
+* Full WebSocket frontend integration
+* Cloud deployment
+* Predictive aviation analytics
 
 ---
 
 ## Disclaimer
 
-This project combines real aviation data and synthetic demonstration data. Synthetic information is clearly labeled and is intended solely for educational and demonstration purposes.
+This platform combines live aviation information and synthetic demonstration data.
+
+Synthetic data is clearly labeled and exists solely for educational, research, and demonstration purposes.

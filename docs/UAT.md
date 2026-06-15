@@ -1,148 +1,102 @@
 # User Acceptance Testing (UAT)
 
-## Project
-Global Flight Intelligence Dashboard
+## Objective
 
-## Purpose
-
-The purpose of this User Acceptance Testing document is to verify that the Global Flight Intelligence Dashboard performs its intended functions and provides a usable experience for end users.
+Verify that the Global Flight Intelligence Dashboard functions as expected and satisfies the Phase 1 requirements.
 
 ---
 
-## Test Environment
+## Dashboard Loading
 
-Frontend:
-- Next.js
-- TypeScript
+Verified that:
 
-Backend:
-- FastAPI
-- Python
-
-Browser:
-- Google Chrome
+- Dashboard loads successfully.
+- Interactive map renders correctly.
+- Intelligence Layer displays properly.
+- Navigation and controls remain responsive.
 
 ---
 
-## Test Cases
+## Live Flight Data
 
-### UAT-01: Dashboard Loads Successfully
+Verified that:
 
-Objective:
-Verify that the dashboard loads without errors.
-
-Expected Result:
-Dashboard interface appears with statistics, map, routes and alerts.
-
-Outcome:
-Successful.
+- Flight information is retrieved from OpenSky Network.
+- Aircraft positions appear on the map.
+- Flight counts update automatically.
+- Live data is clearly labeled.
 
 ---
 
-### UAT-02: Live Flight Data Retrieval
+## Synthetic Fallback
 
-Objective:
-Verify that flight information is retrieved from the backend.
+Verified that:
 
-Expected Result:
-Flights are displayed on the map.
-
-Outcome:
-Successful.
+- Synthetic flight data is generated when live data is unavailable.
+- Synthetic information is clearly labeled.
+- Dashboard functionality remains available.
 
 ---
 
-### UAT-03: Synthetic Data Fallback
+## Route Density Analytics
 
-Objective:
-Verify fallback behaviour when live flight data is unavailable.
+Verified that:
 
-Expected Result:
-Synthetic flight data is generated and displayed.
-
-Outcome:
-Successful.
+- Route Density panel displays correctly.
+- Live route corridors are generated from OpenSky data.
+- Synthetic route corridors are generated when required.
 
 ---
 
-### UAT-04: Country Filter
+## Alert Intelligence
 
-Objective:
-Verify filtering by country.
+Verified that:
 
-Expected Result:
-Only flights matching the selected country remain visible.
-
-Outcome:
-Successful.
+- Alerts display correctly.
+- Live alerts are derived from aircraft conditions.
+- Synthetic alerts are generated when live data is unavailable.
 
 ---
 
-### UAT-05: Speed Filter
+## Historical Replay
 
-Objective:
-Verify minimum speed filtering.
+Verified that:
 
-Expected Result:
-Only flights above the specified speed are displayed.
-
-Outcome:
-Successful.
+- Replay snapshots load successfully.
+- Live replay uses OpenSky-derived flight data.
+- Synthetic replay functions correctly.
 
 ---
 
-### UAT-06: Altitude Filter
+## Airport Drill-Down
 
-Objective:
-Verify minimum altitude filtering.
+Verified that:
 
-Expected Result:
-Only flights above the specified altitude are displayed.
-
-Outcome:
-Successful.
+- Airport markers are interactive.
+- Airport intelligence modal opens correctly.
+- Airport information displays properly.
 
 ---
 
-### UAT-07: Airport Drill Down
+## Filtering
 
-Objective:
-Verify airport information popup.
+Verified that:
 
-Expected Result:
-Airport details and related flight information are displayed.
-
-Outcome:
-Successful.
+- Country filtering works correctly.
+- Minimum speed filtering works correctly.
+- Minimum altitude filtering works correctly.
 
 ---
 
-### UAT-08: Historical Replay
+## Data Export
 
-Objective:
-Verify replay functionality.
+Verified that:
 
-Expected Result:
-Historical snapshots update as replay progresses.
-
-Outcome:
-Successful.
-
----
-
-### UAT-09: Download Data
-
-Objective:
-Verify JSON export.
-
-Expected Result:
-A downloadable JSON file is generated.
-
-Outcome:
-Successful.
+- Dashboard data can be exported as JSON.
+- Exported files contain flight intelligence information.
 
 ---
 
 ## Conclusion
 
-All major dashboard features operated as expected during testing. The application successfully displayed flight information, alerts, route intelligence and airport details while supporting filtering and historical replay capabilities.
+The Global Flight Intelligence Dashboard successfully demonstrates live flight monitoring, synthetic fallback intelligence, route analytics, anomaly detection, airport intelligence, and historical replay functionality within a unified aviation intelligence platform.
